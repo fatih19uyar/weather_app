@@ -1,10 +1,3 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import { NavigationContainer } from '@react-navigation/native';
 import React from 'react';
 import AppNavigator from './src/navigations/AppNavigator';
@@ -13,9 +6,9 @@ import AppNavigator from './src/navigations/AppNavigator';
 function App(): React.JSX.Element {
 
   return (
-      <NavigationContainer>
-        <AppNavigator/>
-      </NavigationContainer>
+        <NavigationContainer>
+          <AppNavigator/>
+        </NavigationContainer>
   );
 }
 
