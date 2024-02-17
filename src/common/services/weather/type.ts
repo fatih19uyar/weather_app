@@ -60,15 +60,14 @@ export interface FetchWeatherAPIRequest {
   days?: number; // Gün sayısı (isteğe bağlı, varsayılan değer 1)
   unixdt?: number; // Unix tarih saati (isteğe bağlı)
   hour?: number; // Saat (isteğe bağlı)
-  key: string; // WeatherAPI erişim anahtarı
 }
 
 export interface LocationSearchParams {
   cityName: string;
-  key: string;
 }
 
 export interface LocationSearchResponse {
+  filter(arg0: (item: any) => item is LocationSearchResponse): unknown;
   id: number;
   name: string;
   region: string;
