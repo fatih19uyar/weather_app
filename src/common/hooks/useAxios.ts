@@ -1,56 +1,46 @@
-import { useEffect, useState } from "react";
-import axios, { AxiosResponse } from "axios";
-import config from "../../../config";
+import axios, { AxiosError } from 'axios';
+import useToastMessage from './useToastMessage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { clearAllLocalStorage } from './useLocalStorage';
+import config from '../../../config';
+import { ErrorResponse } from '../../types/type';
 
-interface ForecastParams {
-    cityName: string;
-    days: number;
-}
+const axiosInstance = axios.create({
+  baseURL: config.BASE_URL,
+});
 
-interface LocationParams {
-    cityName: string;
-}
+axiosInstance.interceptors.request.use(
+  async (config) => {
+    try {
+      const token = await AsyncStorage.getItem(process.env.REACT_APP_ACCESS_TOKEN_KEY!);
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    } catch (error) {
+      console.error('Error getting token from AsyncStorage:', error);
+    }
 
-interface ApiResponse {
+    return config;
+  },
+  (error) => Promise.reject(error),
+);
 
-}
+axiosInstance.interceptors.response.use(
+  async (response) => response,
+  async (error: AxiosError) => {
+    const { showToast } = useToastMessage(); 
 
-interface ErrorType {
-    message: string;
-    // statusCode: number;
-}
+    if (error.response?.status === 401) {
+      showToast({type:'error',text1: 'Api key failed'});
+    }
+     else if ((error.response?.data as ErrorResponse).error.code === 2008) {
+      await clearAllLocalStorage(); 
+      showToast({type:'error',text1: 'Api key failed'});
+      return Promise.reject(error);
+    }
 
-const useAxios = (endpoint: string) => {
-    const [data, setData] = useState<any | null>(null);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [error, setError] = useState<string | null>(null);
+    return Promise.reject(error);
+  },
+);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response: AxiosResponse<any> = await axios.get(endpoint);
-                setData(response.data);
-            } catch (error) {
-                const err = error as ErrorType;
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchData();
-
-    }, [endpoint]);
-
-    return { data, loading, error };
-};
-
-export const useWeatherForecast = (params: ForecastParams) => {
-    const forecastEndpoint = `${config.BASE_URL}forecast.json?key=${config.apiKey}&q=${params.cityName}&days=${params.days}`;
-    return useAxios(forecastEndpoint);
-};
-
-export const useLocations = (params: LocationParams) => {
-    const locationsEndpoint = `${config.BASE_URL}search.json?key=${config.apiKey}&q=${params.cityName}`;
-    return useAxios(locationsEndpoint);
-};
+export default axiosInstance;
