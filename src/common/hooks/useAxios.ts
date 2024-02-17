@@ -9,21 +9,6 @@ const axiosInstance = axios.create({
   baseURL: config.BASE_URL,
 });
 
-axiosInstance.interceptors.request.use(
-  async (config) => {
-    try {
-      const token = await AsyncStorage.getItem(process.env.REACT_APP_ACCESS_TOKEN_KEY!);
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    } catch (error) {
-      console.error('Error getting token from AsyncStorage:', error);
-    }
-
-    return config;
-  },
-  (error) => Promise.reject(error),
-);
 
 axiosInstance.interceptors.response.use(
   async (response) => response,
