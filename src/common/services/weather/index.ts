@@ -1,22 +1,21 @@
 import {AxiosError} from 'axios';
 import axiosInstance from '../../hooks/useAxios';
 import {ErrorResponse} from '../../../types/type';
+import config from '../../../../config';
 import {
   FetchWeatherAPIRequest,
   FetchWeatherResponse,
   LocationSearchParams,
   LocationSearchResponse,
 } from './type';
-import config from '../../../../config';
 
-export const forecastEndpoint = async (
+export const getWeatherByLocation = async (
   request: FetchWeatherAPIRequest,
 ): Promise<FetchWeatherResponse | undefined> => {
-
   try {
-    const { q, days } = request;
+    const {lat, lon} = request;
     const response = await axiosInstance.get<FetchWeatherResponse>(
-      `forecast.json?q=${encodeURIComponent(q)}&days=${days}&key=${config.apiKey}`,
+      `data/2.5/weather?lat=${lat}&lon=${lon}&appid=${config.apiKey}`,
     );
     return response.data;
   } catch (error) {
@@ -25,15 +24,14 @@ export const forecastEndpoint = async (
   }
 };
 
-
-export const locationsEndpoint = async (
+export const getLocationsEndpointByCityName = async (
   request: LocationSearchParams,
 ): Promise<LocationSearchResponse | undefined> => {
   try {
-    const { cityName } = request;
+    const {cityName, limit = 5} = request;
     const response = await axiosInstance.get<LocationSearchResponse>(
-      `search.json?q=${encodeURIComponent(cityName)}&key=${config.apiKey}`,
-    ); 
+      `geo/1.0/direct?q=${cityName}&limit=${limit}&appid=${config.apiKey}`,
+    );
     return response.data;
   } catch (error) {
     const err = error as AxiosError<ErrorResponse>;

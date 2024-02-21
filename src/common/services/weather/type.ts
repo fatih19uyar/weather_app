@@ -50,29 +50,62 @@ interface Forecast {
 }
 
 export interface FetchWeatherResponse {
-  location: Location;
-  current: Current;
-  forecast: Forecast;
+  base: string;
+  clouds: {
+    all: number;
+  };
+  cod: number;
+  coord: {
+    lat: number;
+    lon: number;
+  };
+  dt: number;
+  id: number;
+  main: {
+    feels_like: number;
+    humidity: number;
+    pressure: number;
+    temp: number;
+    temp_max: number;
+    temp_min: number;
+  };
+  name: string;
+  sys: {
+    country: string;
+    id: number;
+    sunrise: number;
+    sunset: number;
+    type: number;
+  };
+  timezone: number;
+  visibility: number;
+  weather: {
+    description: string;
+    icon: string;
+    id: number;
+    main: string;
+  }[];
+  wind: {
+    deg: number;
+    speed: number;
+  };
 }
 
 export interface FetchWeatherAPIRequest {
-  q: string; // Arama yapılacak konumun posta kodu veya şehir adı
-  days?: number; // Gün sayısı (isteğe bağlı, varsayılan değer 1)
-  unixdt?: number; // Unix tarih saati (isteğe bağlı)
-  hour?: number; // Saat (isteğe bağlı)
+  lat: number;
+  lon: number;
 }
 
 export interface LocationSearchParams {
   cityName: string;
+  limit?: number;
 }
 
 export interface LocationSearchResponse {
-  filter(arg0: (item: any) => item is LocationSearchResponse): unknown;
-  id: number;
-  name: string;
-  region: string;
   country: string;
   lat: number;
+  local_names: { [key: string]: string };
   lon: number;
-  url: string;
+  name: string;
+  state?: string;
 }
