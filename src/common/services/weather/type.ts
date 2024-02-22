@@ -41,12 +41,43 @@ interface Current {
   gust_kph: number;
 }
 
-interface ForecastDay {
-  // Buraya tahmin günüyle ilgili alanlar ekleyebilirsiniz
-}
-
-interface Forecast {
-  forecastday: ForecastDay[];
+export interface ForecastData {
+  list: any;
+  dt: number;
+  main: {
+    temp: number;
+    feels_like: number;
+    temp_min: number;
+    temp_max: number;
+    pressure: number;
+    sea_level: number;
+    grnd_level: number;
+    humidity: number;
+    temp_kf: number;
+  };
+  weather: {
+    id: number;
+    main: string;
+    description: string;
+    icon: string;
+  }[];
+  clouds: {
+    all: number;
+  };
+  wind: {
+    speed: number;
+    deg: number;
+    gust: number;
+  };
+  visibility: number;
+  pop: number;
+  rain: {
+    '3h': number;
+  };
+  sys: {
+    pod: string;
+  };
+  dt_txt: string;
 }
 
 export interface FetchWeatherResponse {
@@ -91,6 +122,27 @@ export interface FetchWeatherResponse {
   };
 }
 
+export interface ForecastResponse {
+  map(arg0: (dayForecast: any, index: any) => import("react").JSX.Element): import("react").ReactNode;
+  cod: string;
+  message: number;
+  cnt: number;
+  list: ForecastData[];
+  city: {
+    id: number;
+    name: string;
+    coord: {
+      lat: number;
+      lon: number;
+    };
+    country: string;
+    population: number;
+    timezone: number;
+    sunrise: number;
+    sunset: number;
+  };
+}
+
 export interface FetchWeatherAPIRequest {
   lat: number;
   lon: number;
@@ -104,8 +156,13 @@ export interface LocationSearchParams {
 export interface LocationSearchResponse {
   country: string;
   lat: number;
-  local_names: { [key: string]: string };
+  local_names: {[key: string]: string};
   lon: number;
   name: string;
   state?: string;
+}
+
+export interface ForecastRequestParams {
+  lat: number;
+  lon: number;
 }

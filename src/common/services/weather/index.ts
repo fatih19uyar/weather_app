@@ -5,6 +5,8 @@ import config from '../../../../config';
 import {
   FetchWeatherAPIRequest,
   FetchWeatherResponse,
+  ForecastRequestParams,
+  ForecastResponse,
   LocationSearchParams,
   LocationSearchResponse,
 } from './type';
@@ -31,6 +33,21 @@ export const getLocationsEndpointByCityName = async (
     const {cityName, limit = 5} = request;
     const response = await axiosInstance.get<LocationSearchResponse>(
       `geo/1.0/direct?q=${cityName}&limit=${limit}&appid=${config.apiKey}`,
+    );
+    return response.data;
+  } catch (error) {
+    const err = error as AxiosError<ErrorResponse>;
+    throw err;
+  }
+};
+
+export const getForecastByCoordinates = async (
+    request : ForecastRequestParams
+): Promise<ForecastResponse | undefined> => {
+  try {
+    const {lat, lon} = request;
+    const response = await axiosInstance.get<ForecastResponse>(
+      `data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${config.apiKey}`,
     );
     return response.data;
   } catch (error) {
