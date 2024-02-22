@@ -19,7 +19,7 @@ const WeatherStats: React.FC<WeatherStatsProps> = ({ weatherRes , sunriseTimeStr
           className="w-6 h-6"
         />
         <StyledText className="text-white font-semibold text-base">
-          {wind.speed}km
+          {wind?.speed}km
         </StyledText>
       </StyledView>
       {/* Humidity */}
@@ -29,7 +29,7 @@ const WeatherStats: React.FC<WeatherStatsProps> = ({ weatherRes , sunriseTimeStr
           className="w-6 h-6"
         />
         <StyledText className="text-white font-semibold text-base">
-          {main.humidity}%
+          {main?.humidity}%
         </StyledText>
       </StyledView>
       {/* Sunrise */}
