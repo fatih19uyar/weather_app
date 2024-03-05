@@ -1,4 +1,5 @@
-import { ForecastData, WeatherForecast } from "./type";
+import { ForecastResponse } from "../services/weather/type";
+import { ForecastData } from "./type";
 
 export const kelvinToCelsius = (kelvin: number) => {
   return kelvin - 273.15; // Kelvin'i Celsius'a dönüştürmek için 273.15 çıkarılır
@@ -12,7 +13,7 @@ export const calculateSunRiseTime = (time: number) => {
   return sunriseTimeString;
 };
 
-export const processWeatherForecast = (forecast: WeatherForecast) => {
+export const processWeatherForecast = (forecast: ForecastResponse) => {
   const dailyForecasts: ForecastData[] = [];
   // İlk tahmini alarak her gün için bir tahmin oluştur
   const dailyForecastMap: Map<string, ForecastData> = new Map();
@@ -23,10 +24,10 @@ export const processWeatherForecast = (forecast: WeatherForecast) => {
     if (dailyForecastMap.has(dayKey)) {
       const existingForecast = dailyForecastMap.get(dayKey)!;
       if (item.dt < existingForecast.dt) {
-        dailyForecastMap.set(dayKey, item);
+        dailyForecastMap.set(dayKey, item as any);
       }
     } else {
-      dailyForecastMap.set(dayKey, item);
+      dailyForecastMap.set(dayKey, item as any);
     }
   });
   // Map'ten günlük tahminleri al
