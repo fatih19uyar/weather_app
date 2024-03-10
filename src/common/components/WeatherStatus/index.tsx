@@ -10,21 +10,30 @@ const StyledText = styled(Text);
 const StyledImage = styled(Image);
 
 const WeatherStatus: React.FC<WeatherStatusProps> = ({ weatherRes }) => {
+  const description = weatherRes?.weather?.[0]?.description;
+
   return (
     <>
       <StyledView className="flex-row justify-center">
         <StyledImage
-          source={weatherImages['other']}
+          source={
+            description !== undefined ? weatherImages[description] : undefined
+          }
           className="w-52 h-52"
         />
       </StyledView>
       <StyledView className="space-y-2">
-        <StyledText className="text-center font-bold text-white text-6xl ml-5">
-          {weatherRes && weatherRes.main && weatherRes.main.temp &&
-            kelvinToCelsius(weatherRes.main.temp).toFixed(2)}&#176;
+        <StyledText className="text-center font-bold text-white text-6xl ml-5 ">
+          {weatherRes &&
+            weatherRes.main &&
+            weatherRes.main.temp &&
+            kelvinToCelsius(weatherRes.main.temp).toFixed(2)}
+          &#176;
         </StyledText>
-        <StyledText className="text-center text-white text-xl tracking-widest">
-          {weatherRes && weatherRes.weather && weatherRes.weather[0] &&
+        <StyledText className="text-center text-white text-xl tracking-widest capitalize">
+          {weatherRes &&
+            weatherRes.weather &&
+            weatherRes.weather[0] &&
             weatherRes.weather[0].description}
         </StyledText>
       </StyledView>

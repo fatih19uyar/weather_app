@@ -26,6 +26,7 @@ export default function HomeScreen() {
     showSearch,
     handleLocation,
     handleSearch,
+    handleCurrentLocation
   } = useHandle();
 
   const handleTextDebounce = useCallback(debounce(handleSearch, 600), []);
@@ -51,6 +52,7 @@ export default function HomeScreen() {
             handleTextDebounce={handleTextDebounce}
             cities={cities}
             handleLocation={handleLocation}
+            getCurrentLocation={handleCurrentLocation}
           />
           {/* forecast section */}
           <StyledView className="mx-4 flex justify-around flex-1 mb-2">

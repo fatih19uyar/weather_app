@@ -45,7 +45,7 @@ export default function useHandle() {
   };
 
   const getLocationsByCityName = async (city: string) => {
-    try {
+    try {   
       const res = await getLocationsEndpointByCityName({
         cityName: city,
       });
@@ -53,7 +53,6 @@ export default function useHandle() {
         (location, index, self) =>
           index === self.findIndex(t => t.name === location.name),
       );
-
       setCities(filteredCities ?? []);
     } catch (error) {
       console.log('err', error);
@@ -106,7 +105,7 @@ export default function useHandle() {
     if (myCity !== null) {
       getWeather(myCity.latitude, myCity.longitude);
     } else {
-      getLocation();
+      getWeather(position.latitude, position.longitude);
     }
     setLoading(false);
   };
