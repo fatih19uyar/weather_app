@@ -8,16 +8,15 @@ import {
 } from '../services/weather';
 import {
   FetchWeatherResponse,
-  ForecastResponse,
   LocationSearchResponse,
 } from '../services/weather/type';
 import {getLocalStorageItem, setLocalStorage} from './useLocalStorage';
-import { processWeatherForecast } from '../utils';
-import { ForecastData, WeatherForecast } from '../utils/type';
+import {processWeatherForecast} from '../utils';
+import {ForecastData} from '../utils/type';
 
 export default function useHandle() {
   const {showToast} = useToastMessage();
-  const current = useGeolocation();
+  const [error, position, refresh] = useGeolocation();
   const [loading, setLoading] = useState<boolean>(false);
   const [showSearch, toggleSearch] = useState<boolean>(false);
   const [cities, setCities] = useState<LocationSearchResponse[]>([]);
@@ -34,7 +33,7 @@ export default function useHandle() {
   });
 
   const getLocation = () => {
-    if (current[1] && typeof current[1].latitude === 'number') {
+    if (position && typeof position.latitude === 'number') {
       showToast({type: 'success', text1: 'Location updated.'});
     } else {
       showToast({
@@ -47,20 +46,19 @@ export default function useHandle() {
 
   const getLocationsByCityName = async (city: string) => {
     try {
-        const res = await getLocationsEndpointByCityName({
-            cityName: city,
-        });
-        const filteredCities = res?.filter((location, index, self) =>
-            index === self.findIndex((t) => (
-                t.name === location.name
-            ))
-        );
+      const res = await getLocationsEndpointByCityName({
+        cityName: city,
+      });
+      const filteredCities = res?.filter(
+        (location, index, self) =>
+          index === self.findIndex(t => t.name === location.name),
+      );
 
-        setCities(filteredCities ?? []);
+      setCities(filteredCities ?? []);
     } catch (error) {
-        console.log('err', error);
+      console.log('err', error);
     }
-};
+  };
 
   const getWeather = async (lat: number, lon: number) => {
     try {
@@ -68,23 +66,24 @@ export default function useHandle() {
       if (res !== undefined) {
         setWeatherRes(res);
       }
+      getForecastData(lat,lon);
     } catch (error) {
       setWeatherRes({} as FetchWeatherResponse);
       console.log('err', error);
     }
   };
 
-  const getForecastData = async (lat:number , lon : number) =>{
+  const getForecastData = async (lat: number, lon: number) => {
     try {
-      const res = await getForecastByCoordinates({lat,lon});
-      if (res !== undefined) {   
+      const res = await getForecastByCoordinates({lat, lon});
+      if (res !== undefined) {
         setForecastData(processWeatherForecast(res));
       }
     } catch (error) {
       setForecastData([]);
       console.log('err', error);
     }
-  }
+  };
 
   const fetchMyWeatherData = async () => {
     setLoading(true);
@@ -123,7 +122,12 @@ export default function useHandle() {
     toggleSearch(false);
     setCities([]);
   };
-  
+
+  const handleCurrentLocation = () => {
+    refresh();
+    getWeather(position.latitude,position.longitude);
+  };
+
   useEffect(() => {
     if (selectedCity && selectedCity.lat && selectedCity.lon)
       getWeather(selectedCity.lat, selectedCity.lon);
@@ -134,13 +138,16 @@ export default function useHandle() {
   }, [showSearch]);
 
   useEffect(() => {
-    if (current[1] && typeof current[1].latitude === 'number') {
+    if (position.latitude && typeof position.latitude === 'number') {
       setCurrentLocation({
-        latitude: current[1].latitude,
-        longitude: current[1].longitude,
+        latitude: position.latitude,
+        longitude: position.longitude,
       });
-      setLocalStorage('city', JSON.stringify(current[1]));
-      getForecastData(current[1].latitude, current[1].longitude);
+      setLocalStorage('city', JSON.stringify({
+        latitude: position.latitude,
+        longitude: position.longitude,
+      }));
+      getForecastData(position.latitude, position.longitude);
     }
     fetchMyWeatherData();
   }, []);
@@ -160,6 +167,7 @@ export default function useHandle() {
     toggleSearch,
     setCities,
     handleLocation,
-    handleSearch
+    handleSearch,
+    handleCurrentLocation,
   };
 }
