@@ -8,9 +8,9 @@ const StyledText = styled(Text);
 const WeatherLocation: React.FC<WeatherLocationProps> = ({ weatherRes }) => {
   return (
     <StyledText className="text-white text-center text-2xl font-bold">
-      {weatherRes?.name},
+      {weatherRes?.name}
       <StyledText className="text-lg font-semibold text-gray-300">
-        {weatherRes?.sys?.country}
+         {weatherRes?.sys?.country}
       </StyledText>
     </StyledText>
   );

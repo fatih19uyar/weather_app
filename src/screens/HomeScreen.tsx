@@ -4,24 +4,19 @@ import {
   Image,
   TextInput,
   TouchableOpacity,
-  ScrollView,
 } from 'react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MagnifyingGlassIcon, XMarkIcon} from 'react-native-heroicons/outline';
 import { MapPinIcon} from 'react-native-heroicons/solid';
 import {debounce} from 'lodash';
 import * as Progress from 'react-native-progress';
 import {StatusBar} from 'expo-status-bar';
-import {weatherImages} from '../constants';
-import {
-  getLocalStorageItem,
-} from '../common/hooks/useLocalStorage';
 import {theme} from '../common/themes/theme';
 import {styled} from 'nativewind';
 import {LocationSearchResponse} from '../common/services/weather/type';
 import useHandle from '../common/hooks/useHandle';
-import {calculateSunRiseTime, kelvinToCelsius} from '../common/utils';
+import {calculateSunRiseTime} from '../common/utils';
 import WeatherStatus from '../common/components/WeatherStatus';
 import WeatherLocation from '../common/components/WeatherLocation';
 import WeatherStats from '../common/components/WeatherStats';
@@ -32,68 +27,20 @@ const StyledView = styled(View);
 const StyledTextInput = styled(TextInput);
 const StyledTouchableOpacity = styled(TouchableOpacity);
 const StyledText = styled(Text);
-const StyledImage = styled(Image);
 
 export default function HomeScreen() {
-  const [showSearch, toggleSearch] = useState<boolean>(false);
-  const [locations, setLocations] = useState<any>([]);
   const {
-    getLocation,
-    getLocationsByCityName,
-    getWeather,
     cities,
     weatherRes,
     loading,
     forecastData,
-    setLoading,
+    toggleSearch,
+    showSearch,
+    handleLocation,
+    handleSearch,
   } = useHandle();
-  const sunriseTimeString = calculateSunRiseTime(weatherRes?.sys?.sunrise);
 
-  const handleSearch = (search: string) => {
-    if (search && search.length > 2) {
-      getLocationsByCityName(search);
-      console.log('cities', cities);
-    }
-  };
-
-  const handleLocation = (loc: {name: string}) => {
-    setLoading(true);
-    toggleSearch(false);
-    setLocations([]);
-  };
-
-  useEffect(() => {
-    fetchMyWeatherData();
-  }, []);
-
-  const fetchMyWeatherData = async () => {
-    setLoading(true);
-    let myCity: {latitude: number; longitude: number} | null = null;
-
-    const cityString: string | null = await getLocalStorageItem('city');
-    if (cityString) {
-      try {
-        const cityObj = JSON.parse(cityString);
-        if (typeof cityObj === 'object' && cityObj !== null) {
-          const {latitude, longitude} = cityObj;
-          if (typeof latitude === 'number' && typeof longitude === 'number') {
-            myCity = {latitude, longitude};
-          }
-        }
-      } catch (error) {
-        console.error('Error parsing city data:', error);
-      }
-    }
-    if (myCity !== null) {
-      getWeather(myCity.latitude, myCity.longitude);
-    } else {
-      getLocation();
-    }
-    setLoading(false);
-    console.log('weatherRes', weatherRes);
-  };
-
-  const handleTextDebounce = useCallback(debounce(handleSearch, 1200), []);
+  const handleTextDebounce = useCallback(debounce(handleSearch, 300), []);
 
   return (
     <StyledView className="flex-1 relative">
@@ -140,11 +87,10 @@ export default function HomeScreen() {
                 )}
               </StyledTouchableOpacity>
             </StyledView>
-            {locations.length > 0 && showSearch ? (
+            {cities.length > 0 && showSearch ? (
               <StyledView className="absolute w-full bg-gray-300 top-16 rounded-3xl ">
-                {locations.map((loc: LocationSearchResponse, index: number) => {
-                  console.log('tset', loc);
-                  let showBorder = index + 1 != locations.length;
+                {cities.map((loc: LocationSearchResponse, index: number) => {
+                  let showBorder = index + 1 != cities.length;
                   let borderClass = showBorder
                     ? ' border-b-2 border-b-gray-400'
                     : '';
@@ -158,7 +104,7 @@ export default function HomeScreen() {
                       }>
                       <MapPinIcon size={20} color="gray" />
                       <StyledText className="text-black text-lg ml-2">
-                        {loc?.name}, {loc?.country}
+                        {loc?.name}, {loc.country}
                       </StyledText>
                     </StyledTouchableOpacity>
                   );
@@ -171,7 +117,7 @@ export default function HomeScreen() {
           <StyledView className="mx-4 flex justify-around flex-1 mb-2">
             <WeatherLocation weatherRes={weatherRes} />
             <WeatherStatus weatherRes={weatherRes} />
-            <WeatherStats weatherRes={weatherRes} sunriseTimeString={sunriseTimeString} />
+            <WeatherStats weatherRes={weatherRes} sunriseTimeString={calculateSunRiseTime(weatherRes?.sys?.sunrise)} />
           </StyledView>
           <WeatherForecast forecastData={forecastData ?? []} />
         </StyledSafeArea>
