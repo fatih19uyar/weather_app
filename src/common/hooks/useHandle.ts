@@ -21,6 +21,11 @@ export default function useHandle() {
   const [loading, setLoading] = useState<boolean>(false);
   const [showSearch, toggleSearch] = useState<boolean>(false);
   const [cities, setCities] = useState<LocationSearchResponse[]>([]);
+  const [selectedCity, setSelectedCity] = useState<{
+    name?: string;
+    lat?: number;
+    lon?: number;
+  }>({});
   const [weatherRes, setWeatherRes] = useState({} as FetchWeatherResponse);
   const [forecastData, setForecastData] = useState<ForecastData[]>([]);
   const [currentLocation, setCurrentLocation] = useState({
@@ -113,11 +118,16 @@ export default function useHandle() {
     }
   };
 
-  const handleLocation = (loc: {name: string}) => {
-    setLoading(true);
+  const handleLocation = async (name: string, lat: number, lon: number) => {
+    setSelectedCity({name: name, lat: lat, lon: lon});
     toggleSearch(false);
     setCities([]);
   };
+  
+  useEffect(() => {
+    if (selectedCity && selectedCity.lat && selectedCity.lon)
+      getWeather(selectedCity.lat, selectedCity.lon);
+  }, [selectedCity]);
 
   useEffect(() => {
     !showSearch && cities.length > 0 ? setCities([]) : null;
