@@ -42,14 +42,20 @@ export default function useHandle() {
 
   const getLocationsByCityName = async (city: string) => {
     try {
-      const res = await getLocationsEndpointByCityName({
-        cityName: city,
-      });
-      setCities(res ?? []);
+        const res = await getLocationsEndpointByCityName({
+            cityName: city,
+        });
+        const filteredCities = res?.filter((location, index, self) =>
+            index === self.findIndex((t) => (
+                t.name === location.name
+            ))
+        );
+
+        setCities(filteredCities ?? []);
     } catch (error) {
-      console.log('err', error);
+        console.log('err', error);
     }
-  };
+};
 
   const getWeather = async (lat: number, lon: number) => {
     try {
