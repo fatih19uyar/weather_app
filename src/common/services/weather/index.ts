@@ -1,5 +1,5 @@
-import {AxiosError} from 'axios';
-import axiosInstance from '../../hooks/useAxios';
+import axios, {AxiosError} from 'axios';
+import {axiosInstance} from '../../hooks/useAxios';
 import {ErrorResponse} from '../../../types/type';
 import config from '../../../../config';
 import {
@@ -28,10 +28,11 @@ export const getWeatherByLocation = async (
 
 export const getLocationsEndpointByCityName = async (
   request: LocationSearchParams,
-): Promise<LocationSearchResponse | undefined> => {
+): Promise<LocationSearchResponse[] | undefined> => {
   try {
     const {cityName, limit = 5} = request;
-    const response = await axiosInstance.get<LocationSearchResponse>(
+    
+    const response = await axiosInstance.get<LocationSearchResponse[]>(
       `geo/1.0/direct?q=${cityName}&limit=${limit}&appid=${config.apiKey}`,
     );
     return response.data;
