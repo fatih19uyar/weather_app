@@ -5,5 +5,5 @@ export interface SearchBarProps {
     toggleSearch: (show: boolean) => void;
     handleTextDebounce: (text: string) => void;
     cities: LocationSearchResponse[];
-    handleLocation: (loc: LocationSearchResponse) => void;
+    handleLocation: (name: string, lat: number, lon: number) => void;
 }

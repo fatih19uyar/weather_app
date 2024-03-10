@@ -56,7 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             return (
               <StyledTouchableOpacity
                 key={index}
-                onPress={() => handleLocation(loc)}
+                onPress={() => handleLocation(loc.name, loc.lat, loc.lon)}
                 className={
                   'flex-row items-center border-0 p-3 px-4 mb-1 ' + borderClass
                 }>
