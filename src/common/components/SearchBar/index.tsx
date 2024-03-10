@@ -1,6 +1,6 @@
 import React from 'react';
 import {View, TextInput, TouchableOpacity, Text} from 'react-native';
-import {MagnifyingGlassIcon, XMarkIcon} from 'react-native-heroicons/outline';
+import {MagnifyingGlassIcon, MapIcon, XMarkIcon} from 'react-native-heroicons/outline';
 import {LocationSearchResponse} from '../../services/weather/type';
 import {styled} from 'nativewind';
 import {MapPinIcon} from 'react-native-heroicons/solid';
@@ -18,6 +18,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   handleTextDebounce,
   cities,
   handleLocation,
+  getCurrentLocation
 }) => {
   return (
     <StyledView style={{height: '7%'}} className="mx-4 relative z-50">
@@ -47,6 +48,12 @@ const SearchBar: React.FC<SearchBarProps> = ({
             <MagnifyingGlassIcon size={25} color="white" />
           )}
         </StyledTouchableOpacity>
+       {!showSearch ? <StyledTouchableOpacity
+          onPress={getCurrentLocation}
+          className="rounded-full p-3 m-1"
+          style={{backgroundColor: theme.bgWhite(0.3)}}>
+            <MapPinIcon size={25} color="white" />
+        </StyledTouchableOpacity>: null}
       </StyledView>
       {cities.length > 0 && showSearch ? (
         <StyledView className="absolute w-full bg-gray-300 top-16 rounded-3xl ">

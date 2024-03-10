@@ -6,4 +6,5 @@ export interface SearchBarProps {
     handleTextDebounce: (text: string) => void;
     cities: LocationSearchResponse[];
     handleLocation: (name: string, lat: number, lon: number) => void;
+    getCurrentLocation: () => void;
 }
