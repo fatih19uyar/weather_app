@@ -11,15 +11,16 @@ import {
   ForecastResponse,
   LocationSearchResponse,
 } from '../services/weather/type';
-import {setLocalStorage} from './useLocalStorage';
+import {getLocalStorageItem, setLocalStorage} from './useLocalStorage';
 import { processWeatherForecast } from '../utils';
 import { ForecastData, WeatherForecast } from '../utils/type';
 
 export default function useHandle() {
   const {showToast} = useToastMessage();
   const current = useGeolocation();
-  const [loading, setLoading] = useState(false);
-  const [cities, setCities] = useState({} as LocationSearchResponse);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [showSearch, toggleSearch] = useState<boolean>(false);
+  const [cities, setCities] = useState<LocationSearchResponse[]>([]);
   const [weatherRes, setWeatherRes] = useState({} as FetchWeatherResponse);
   const [forecastData, setForecastData] = useState<ForecastData[]>([]);
   const [currentLocation, setCurrentLocation] = useState({
@@ -44,9 +45,7 @@ export default function useHandle() {
       const res = await getLocationsEndpointByCityName({
         cityName: city,
       });
-            if (res !== undefined) {
-        setCities(res);
-      }
+      setCities(res ?? []);
     } catch (error) {
       console.log('err', error);
     }
@@ -63,6 +62,7 @@ export default function useHandle() {
       console.log('err', error);
     }
   };
+
   const getForecastData = async (lat:number , lon : number) =>{
     try {
       const res = await getForecastByCoordinates({lat,lon});
@@ -75,6 +75,48 @@ export default function useHandle() {
     }
   }
 
+  const fetchMyWeatherData = async () => {
+    setLoading(true);
+    let myCity: {latitude: number; longitude: number} | null = null;
+
+    const cityString: string | null = await getLocalStorageItem('city');
+    if (cityString) {
+      try {
+        const cityObj = JSON.parse(cityString);
+        if (typeof cityObj === 'object' && cityObj !== null) {
+          const {latitude, longitude} = cityObj;
+          if (typeof latitude === 'number' && typeof longitude === 'number') {
+            myCity = {latitude, longitude};
+          }
+        }
+      } catch (error) {
+        console.error('Error parsing city data:', error);
+      }
+    }
+    if (myCity !== null) {
+      getWeather(myCity.latitude, myCity.longitude);
+    } else {
+      getLocation();
+    }
+    setLoading(false);
+  };
+
+  const handleSearch = (search: string) => {
+    if (search && search.length > 2) {
+      getLocationsByCityName(search);
+    }
+  };
+
+  const handleLocation = (loc: {name: string}) => {
+    setLoading(true);
+    toggleSearch(false);
+    setCities([]);
+  };
+
+  useEffect(() => {
+    !showSearch && cities.length > 0 ? setCities([]) : null;
+  }, [showSearch]);
+
   useEffect(() => {
     if (current[1] && typeof current[1].latitude === 'number') {
       setCurrentLocation({
@@ -84,6 +126,7 @@ export default function useHandle() {
       setLocalStorage('city', JSON.stringify(current[1]));
       getForecastData(current[1].latitude, current[1].longitude);
     }
+    fetchMyWeatherData();
   }, []);
 
   return {
@@ -97,5 +140,10 @@ export default function useHandle() {
     weatherRes,
     loading,
     cities,
+    showSearch,
+    toggleSearch,
+    setCities,
+    handleLocation,
+    handleSearch
   };
 }

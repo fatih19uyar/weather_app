@@ -1,6 +1,5 @@
 import axios, { AxiosError } from 'axios';
 import useToastMessage from './useToastMessage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { clearAllLocalStorage } from './useLocalStorage';
 import config from '../../../config';
 import { ErrorResponse } from '../../types/type';
@@ -8,7 +7,6 @@ import { ErrorResponse } from '../../types/type';
 const axiosInstance = axios.create({
   baseURL: config.BASE_URL,
 });
-
 
 axiosInstance.interceptors.response.use(
   async (response) => response,
@@ -28,4 +26,5 @@ axiosInstance.interceptors.response.use(
   },
 );
 
-export default axiosInstance;
+export  {axiosInstance};
+
