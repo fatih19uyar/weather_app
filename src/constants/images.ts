@@ -11,7 +11,9 @@ const weatherImages : WeatherImages = {
     'thunderstorm': require('../assets/images/moderaterain.png'),
     'snow': require('../assets/images/moderaterain.png'),
     'mist': require('../assets/images/mist.png'),
-    'other': require('../assets/images/moderaterain.png')
+    'other': require('../assets/images/moderaterain.png'),
+    'overcast clouds': require('../assets/images/overcastClouds.png')
+
 };
 
 export default weatherImages;

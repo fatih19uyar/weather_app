@@ -17,7 +17,7 @@ const WeatherStatus: React.FC<WeatherStatusProps> = ({ weatherRes }) => {
       <StyledView className="flex-row justify-center">
         <StyledImage
           source={
-            description !== undefined ? weatherImages[description] : undefined
+            description !== undefined ? weatherImages[description] : weatherImages["other"]
           }
           className="w-52 h-52"
         />
