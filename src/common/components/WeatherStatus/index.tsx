@@ -1,27 +1,33 @@
-import React from "react";
-import { WeatherStatusProps } from "./type";
-import { styled } from 'nativewind';
-import { Image, Text, View } from "react-native";
-import weatherImages from "../../../constants/images";
-import { kelvinToCelsius } from "../../utils";
+import React from 'react';
+import {WeatherStatusProps} from './type';
+import {styled} from 'nativewind';
+import {Image, Text, View} from 'react-native';
+import weatherImages from '../../../constants/images';
+import {kelvinToCelsius} from '../../utils';
 
 const StyledView = styled(View);
 const StyledText = styled(Text);
 const StyledImage = styled(Image);
 
-const WeatherStatus: React.FC<WeatherStatusProps> = ({ weatherRes }) => {
+const WeatherStatus: React.FC<WeatherStatusProps> = ({
+  weatherRes,
+  keyboardStatus,
+}) => {
   const description = weatherRes?.weather?.[0]?.description;
-
   return (
     <>
-      <StyledView className="flex-row justify-center">
-        <StyledImage
-          source={
-            description !== undefined ? weatherImages[description] : weatherImages["other"]
-          }
-          className="w-52 h-52"
-        />
-      </StyledView>
+      {keyboardStatus ? null : (
+        <StyledView className="flex-row justify-center">
+          <StyledImage
+            source={
+              description !== undefined
+                ? weatherImages[description]
+                : weatherImages['other']
+            }
+            className="w-52 h-52"
+          />
+        </StyledView>
+      )}
       <StyledView className="space-y-2">
         <StyledText className="text-center font-bold text-white text-6xl ml-5 ">
           {weatherRes &&

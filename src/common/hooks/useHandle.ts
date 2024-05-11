@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useRef, useState} from 'react';
 import {useGeolocation} from './useLocations';
 import useToastMessage from './useToastMessage';
 import {
@@ -13,6 +13,7 @@ import {
 import {getLocalStorageItem, setLocalStorage} from './useLocalStorage';
 import {processWeatherForecast} from '../utils';
 import {ForecastData} from '../utils/type';
+import {Platform, TextInput} from 'react-native';
 
 export default function useHandle() {
   const {showToast} = useToastMessage();
@@ -31,6 +32,8 @@ export default function useHandle() {
     latitude: 0,
     longitude: 0,
   });
+  const [keyboardStatus, setKeyboardStatus] = useState(false);
+  const inputRef = useRef<TextInput>(null);
 
   const getLocation = () => {
     if (position && typeof position.latitude === 'number') {
@@ -45,7 +48,7 @@ export default function useHandle() {
   };
 
   const getLocationsByCityName = async (city: string) => {
-    try {   
+    try {
       const res = await getLocationsEndpointByCityName({
         cityName: city,
       });
@@ -65,7 +68,7 @@ export default function useHandle() {
       if (res !== undefined) {
         setWeatherRes(res);
       }
-      getForecastData(lat,lon);
+      getForecastData(lat, lon);
     } catch (error) {
       setWeatherRes({} as FetchWeatherResponse);
       console.log('err', error);
@@ -124,7 +127,7 @@ export default function useHandle() {
 
   const handleCurrentLocation = () => {
     refresh();
-    getWeather(position.latitude,position.longitude);
+    getWeather(position.latitude, position.longitude);
   };
 
   useEffect(() => {
@@ -137,15 +140,25 @@ export default function useHandle() {
   }, [showSearch]);
 
   useEffect(() => {
+    setKeyboardStatus(showSearch && Platform.OS === 'android');
+    if (showSearch && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [showSearch]);
+
+  useEffect(() => {
     if (position.latitude && typeof position.latitude === 'number') {
       setCurrentLocation({
         latitude: position.latitude,
         longitude: position.longitude,
       });
-      setLocalStorage('city', JSON.stringify({
-        latitude: position.latitude,
-        longitude: position.longitude,
-      }));
+      setLocalStorage(
+        'city',
+        JSON.stringify({
+          latitude: position.latitude,
+          longitude: position.longitude,
+        }),
+      );
       getForecastData(position.latitude, position.longitude);
     }
     fetchMyWeatherData();
@@ -168,5 +181,8 @@ export default function useHandle() {
     handleLocation,
     handleSearch,
     handleCurrentLocation,
+    setKeyboardStatus,
+    keyboardStatus,
+    inputRef
   };
 }

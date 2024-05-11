@@ -7,4 +7,5 @@ export interface WeatherStatusProps {
         description?: string;
       }[];
     };
+    keyboardStatus: boolean
   }

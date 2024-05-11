@@ -18,7 +18,8 @@ const SearchBar: React.FC<SearchBarProps> = ({
   handleTextDebounce,
   cities,
   handleLocation,
-  getCurrentLocation
+  getCurrentLocation,
+  inputRef
 }) => {
   return (
     <StyledView style={{height: '7%'}} className="mx-4 relative z-50">
@@ -35,6 +36,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
             className="pl-6 h-10 pb-1 flex-1 text-base text-white"
             onChangeText={handleTextDebounce}
             placeholder="Search city"
+            ref={inputRef}
             placeholderTextColor={'lightgray'}
           />
         ) : null}

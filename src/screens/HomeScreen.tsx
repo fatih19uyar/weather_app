@@ -26,7 +26,9 @@ export default function HomeScreen() {
     showSearch,
     handleLocation,
     handleSearch,
-    handleCurrentLocation
+    handleCurrentLocation,
+    keyboardStatus,
+    inputRef
   } = useHandle();
 
   const handleTextDebounce = useCallback(debounce(handleSearch, 600), []);
@@ -53,17 +55,20 @@ export default function HomeScreen() {
             cities={cities}
             handleLocation={handleLocation}
             getCurrentLocation={handleCurrentLocation}
+            inputRef={inputRef}
           />
           {/* forecast section */}
           <StyledView className="mx-4 flex justify-around flex-1 mb-2">
             <WeatherLocation weatherRes={weatherRes} />
-            <WeatherStatus weatherRes={weatherRes} />
+            <WeatherStatus weatherRes={weatherRes} keyboardStatus={keyboardStatus} />
             <WeatherStats
               weatherRes={weatherRes}
               sunriseTimeString={calculateSunRiseTime(weatherRes?.sys?.sunrise)}
             />
           </StyledView>
-          <WeatherForecast forecastData={forecastData ?? []} />
+          {keyboardStatus ? null : (
+            <WeatherForecast forecastData={forecastData ?? []} />
+          )}
         </StyledSafeArea>
       )}
     </StyledView>
