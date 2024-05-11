@@ -12,7 +12,8 @@ const weatherImages : WeatherImages = {
     'snow': require('../assets/images/moderaterain.png'),
     'mist': require('../assets/images/mist.png'),
     'other': require('../assets/images/moderaterain.png'),
-    'overcast clouds': require('../assets/images/overcastClouds.png')
+    'overcast clouds': require('../assets/images/overcastClouds.png'),
+    'haze': require('../assets/images/haze.png'),
 
 };
 
